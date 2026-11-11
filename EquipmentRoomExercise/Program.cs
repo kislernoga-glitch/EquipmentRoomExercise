@@ -4,7 +4,17 @@ using System;
 //Todo: צרו מחלקת חריגים המטפלת במקרים בהם אין מספיק מחשבים זמינים להשאלה.
 //שם המחלקה צריך להיות EquipmentUnavailableException.
 
+class EquipmentUnavailableException: Exception
+{
+    public int RequestedAmount { get; }
+    public int Diffrence {  get; }
 
+    public EquipmentUnavailableExceptio(int amount, int available) : base("Not enough equipment available")
+    {
+        RequestedAmount = amount;
+        Diffrence = amount - available;
+    }
+}
 
 class EquipmentRoom
 {
@@ -34,7 +44,10 @@ class EquipmentRoom
        
             // TODO: יש לזרוק חריגה מתאימה כאשר אין מספיק מחשבים זמינים.
            
-     
+        if(amount> AvailableComputers)
+        {
+            throw new EquipmentUnavailableException(amount, AvailableComputers)
+        }
 
         AvailableComputers -= amount;
         Console.WriteLine($"הושאלו {amount} מחשבים בהצלחה.");
@@ -58,8 +71,17 @@ class Program
 
         room.Borrow(4);
         Console.WriteLine("ממשיכים בתוכנית...");
+        try
+        {
+            room.Borrow(8);
+        }
 
-        room.Borrow(8);
+        catch (EquipmentUnavailableException ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.RequestedAmount)
+            Console.WriteLine(ex.Diffrence);
+        }
 
         Console.WriteLine("מספר המחשבים הזמינים: " + room.AvailableComputers);
     }
